@@ -12,24 +12,28 @@
         dataUri: '/index.php?act=list',
         formConfig:{
           form:[
-            { label:'带参数列表', prop: "type", type:"select", placeholder:"请选择", required: true, value: '1', 
+            //select
+            { label:'带参数列表', prop: "type", type:"select", placeholder:"请选择", required: true, value: 1, 
               options:[
-                {
-                  value: '1',
-                  label: '类型1'},
-                {
-                  value: '2',
-                  label: '类型2'
-                }]
+                { value: 1, label: '类型1'},
+                { value: 2, label: '类型2'},
+                { value: 33, label: '类型33' }]
             },
+            { label: 'AJAX列表', prop: "ajaxName", type: "select", placeholder: "请选择", value:1, uri:'/index.php?act=getNameList'},
 
+            { label: '级联选择器', prop: "relation", type: "select", placeholder: "请选择", value: 2, parent: 'type', uri: '/index.php?act=relation&pid=' },
+            { label: '级联选择器2', prop: "relation2", type: "select", placeholder: "请选择", value: 3, parent: 'type', uri: '/index.php?act=relation2&pid=' },
+
+            //input
             { label: '关键字', prop: "keyword", type: "input", placeholder: "请输入查询内容", required: true , value:"测试关键字"},
 
+            //time
             { label: '活动时间', prop: "timeRange", type: "datetimerange", required: true, value:['2018-01-01', '2018-02-01'], newline: true},
             { label: '开始时间', prop: "beginTime", type: "datetime", value: '2018-01-01 16:33:01', placeholder: "请选择时间"},
             { label: '开始日期', prop: "beginDate", type: "date", value: '2018-02-02', placeholder: "请选择日期" },
             { label: '日期范围', prop: "beginRange", type: "daterange", format: "yyyy年MM月dd日", value: ['2018-01-01', '2018-02-01'] },
 
+            //checkbox
             { label: '上首页', prop: "toIndex", type: "checkbox", value: true},
           ],
           operate: [
@@ -40,20 +44,20 @@
         listConfig:{
           pageSize: 10,
           title:[
-            { prop: "id", label:"编号", width:'50'},
-            { prop: "name", label: "模块名称" },
+            { prop: "id", label:"编号", width:'88', sortable: true },
+            { prop: "stage", label: "时间",},
             { prop: "type", label: "模块类型" },
-            { prop: "link", label: "跳转页面类型" },
-            { prop: "time", label: "提交时间" },
-            { prop: "status", label: "状态" },
-            { prop: "admin", label: "操作人" }],
+            { prop: "site", label: "位置", sortable: true },
+            { prop: "add_time", label: "提交时间" },
+            { prop: "status", label: "状态", sortable: true},
+            { prop: "show", label: "显示状态" }],
           operate:[
-            { label: '新开', action:'update', type: 'link', link:'http://demo.com/?id={id}&name={name}'},
+            { label: '新开', action:'update', type: 'link', link:'http://demo.com/?id={rs_id}&site={rs_site}'},
             { label: '二次确认', action: 'look',  type: 'script', confirm:'确认?'},
-            { label: '自定义脚本', action: 'log',  type: 'script', condition: [['id', 'between', 2, 10], ['status', 'eq', '隐藏'] ]},
-            { label: '显示', action: 'show', type: 'script' , condition:[['status', 'eq', '隐藏']]},
-            { label: '隐藏', action: 'hide', type: 'script', condition: [['status', 'eq', '显示']]},
-            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['id', 'in', [1,5,6]]]},
+            { label: '自定义脚本', action: 'log',  type: 'script', condition: [['rs_id', 'between', 2, 10], ['status', 'eq', '未开始'] ]},
+            { label: '显示', action: 'show', type: 'script' , condition:[['show', 'eq', '隐藏']]},
+            { label: '隐藏', action: 'hide', type: 'script', condition: [['show', 'eq', '显示'], ['status', 'in', ['未开始','已结束']]]},
+            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['rs_id', 'in', [1,5,6]]]},
           ],
           batchConfig: [
             { label: '批量隐藏', action: 'batch_hide', confirm: '确定批量隐藏?', color:"primary", size:"small"},
