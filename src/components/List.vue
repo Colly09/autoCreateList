@@ -5,11 +5,13 @@
       ref="multipleTable"
       tooltip-effect="dark"
       @selection-change="handleSelectionChange"
+      @sort-change="sortChange"
       size="mini"
-      border >
+      border 
+      v-loading="loading">
       <el-table-column type="selection" width="55" v-if="selection"></el-table-column>
 
-      <el-table-column v-for="item in listConfig" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width"></el-table-column>
+      <el-table-column v-for="item in listConfig" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :sortable="item.sortable"></el-table-column>
       <el-table-column label="操作" v-if="operate">
         <template slot-scope="scope">
           <Operate :operateList="operateList" :row="scope.row"/>
@@ -27,6 +29,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :page-size="pageSize"
+        :current-page="nowPage"
         layout="total, prev, pager, next"
         :total="total">
       </el-pagination>
@@ -51,7 +54,13 @@ export default {
       batchOperateList:[],
       pageSize: 20,
       total: 0,
-      nowPage: 0
+      nowPage: 1,
+      loading:true,
+      sort:{
+        prop:null,
+        order:'asc'
+      },
+      search:{}
     }
   },
   components:{
@@ -60,15 +69,16 @@ export default {
   watch: {
     'storeTableData': {
       handler: function (data) {
+        this.loading = false;
         this.tableData = data;
       },
       deep: true
     },
     'storePageData': {
       handler: function (data) {
-        this.pageSize = data.pageSize;
-        this.total = data.total;
-        this.nowPage = data.nowPage + 1;
+        this.pageSize = parseInt(data.pageSize);
+        this.total = parseInt(data.total);
+        this.nowPage = data.nowPage;
       },
       deep: true
     },
@@ -81,9 +91,25 @@ export default {
         }
       },
       deep: true
+    },
+    'storeSearchData':{
+      handler: function (data) {
+        this.nowPage = 1;
+        this.search = data;
+        this.getList();
+      },
+      deep: true
     }
   },
   methods: {
+    sortChange(data){
+      console.log(data)
+      this.sort.prop = data.prop
+      this.sort.order = data.prop ? data.order.replace('ending','') : null;
+      this.nowPage = 1;
+      this.getList();
+      return;
+    },
     toggleSelection() {
       this.$refs.multipleTable.clearSelection();
     },
@@ -171,10 +197,11 @@ export default {
       }
     },
     handleCurrentChange(val) {
-      this.nowPage = val - 1;
+      this.nowPage = val;
       this.getList();
     },
     getList() {
+      this.loading = true;
       if(!this.$selfConfig.dataUri){
         this.$confirm('请配置数据接口请求地址[Config.dataUri]', '提示', {
           confirmButtonText: '确定',
@@ -184,12 +211,15 @@ export default {
         });
         return;
       }
+      let data = {
+            'nowPage': this.nowPage,
+            'pageSize': this.pageSize,
+            'order':this.sort,
+            'search':this.search
+          }
       this.$store.dispatch('getTableData', {
         ajaxUri: this.$selfConfig.dataUri, 
-        data: JSON.stringify({
-            'nowPage': this.nowPage,
-            'pageSize': this.pageSize
-          })
+        data: JSON.stringify(data)
       })
     }
   },
@@ -216,7 +246,8 @@ export default {
     ...mapGetters({
       storeTableData: 'tableData',
       storePageData: 'pageData',
-      storeOperateData: 'operateData'
+      storeOperateData: 'operateData',
+      storeSearchData: 'searchData'
     })
   },
 }

@@ -5,13 +5,15 @@ import { stat } from 'fs';
 const state = {
   tableData: [],
   pageData: [],
-  operateData: {}
+  operateData: {},
+  searchData:{}
 }
 
 const getters = {
   tableData: state => state.tableData,
   pageData: state => state.pageData,
   operateData: state => state.operateData,
+  searchData: state => state.searchData,
 }
 
 const actions = {
@@ -42,6 +44,9 @@ const mutations = {
   },
   SET_OPERATE_DATA(state, data){
     state.operateData = data
+  },
+  SET_SEARCH_DATA(state, data) {
+    state.searchData = data
   },
 }
 

@@ -109,10 +109,26 @@ export default {
   },
   methods: {
     search(){
-      console.log(this.required);
       let data = {};
       for(let field of this.formField){
-        data[field.prop] = this.form[field.inputNum];
+        
+        if(Object.prototype.toString.call(this.form[field.inputNum]) == '[object Array]'){
+          data[field.prop] = this.form[field.inputNum].slice(0);
+        }else{
+          data[field.prop] = this.form[field.inputNum];
+        }
+        // 将时间转换为时间戳
+        if(field.type == "datetimerange" || field.type == "daterange"){
+          if(data[field.prop][0]){
+            data[field.prop][0] = Math.floor(data[field.prop][0].getTime()/1000);
+          }
+          if(data[field.prop][1]){
+            data[field.prop][1] = Math.floor(data[field.prop][1].getTime()/1000);
+          }
+        }
+        if((field.type == "datetime" || field.type == "date") && data[field.prop] ){
+          data[field.prop] = Math.floor(data[field.prop].getTime()/1000);
+        }
         //判断必填
         if(this.required.indexOf(field.prop) >= 0){
           if(!data[field.prop]){
@@ -126,7 +142,7 @@ export default {
           }
         }
       }
-      console.log(data);
+      this.$store.commit('SET_SEARCH_DATA', data)
     },
     goLink(link){
       this.$store.commit('SET_OPERATE_DATA', {
@@ -161,10 +177,8 @@ export default {
             field.value[1] = new Date(field.value[1]);
           }
         }
-        if(field.type == "datetime" || field.type == "date"){
-          if(field.value){
-            field.value = new Date(field.value);
-          }
+        if((field.type == "datetime" || field.type == "date") && field.value ){
+          field.value = new Date(field.value);
         }
         if(field.value){
           this.form[inputNum] = field.value;
