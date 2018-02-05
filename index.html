@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>autolist</title>
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link href="<%=htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
+    <% } %>
   </head>
   <body>
     <script>
@@ -44,23 +47,24 @@
         listConfig:{
           pageSize: 10,
           title:[
-            { prop: "id", label:"编号", width:'88', sortable: true },
-            { prop: "stage", label: "时间",},
+            { prop: "id", label:"编号", width:88, sortable: true },
+            { prop: "name", label: "时间", format: 'diy', color:"red" },
             { prop: "type", label: "模块类型" },
-            { prop: "site", label: "位置", sortable: true },
-            { prop: "add_time", label: "提交时间" },
-            { prop: "status", label: "状态", sortable: true},
-            { prop: "show", label: "显示状态" }],
+            { prop: "link", label: "位置", sortable: true },
+            { prop: "time", label: "提交时间" },
+            { prop: "status", label: "状态", sortable: true, format: 'switch', case:{0:'显示', 1:'隐藏'}},
+            { prop: "admin", label: "操作人", format:'multiple', props: ['admin,#CCC,diy','time','num,red,interval']},
+            { prop: "num", label: "倒计时", format:'interval', color: "red" }],
           operate:[
             { label: '新开', action:'update', type: 'link', link:'http://demo.com/?id={rs_id}&site={rs_site}'},
             { label: '二次确认', action: 'look',  type: 'script', confirm:'确认?'},
-            { label: '自定义脚本', action: 'log',  type: 'script', condition: [['rs_id', 'between', 2, 10], ['status', 'eq', '未开始'] ]},
-            { label: '显示', action: 'show', type: 'script' , condition:[['show', 'eq', '隐藏']]},
-            { label: '隐藏', action: 'hide', type: 'script', condition: [['show', 'eq', '显示'], ['status', 'in', ['未开始','已结束']]]},
-            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['rs_id', 'in', [1,5,6]]]},
+            { label: '自定义脚本', action: 'log',  type: 'script', condition: [['id', 'between', 2, 10], ['status', 'eq', '未开拍'] ]},
+            { label: '显示', action: 'show', type: 'script' , condition:[ ['status', 'eq', '1'] ]},
+            { label: '隐藏', action: 'hide', type: 'script', condition: [ ['status', 'eq', '0'] ]},
+            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['id', 'in', [1,5,6]]]},
           ],
           batchConfig: [
-            { label: '批量隐藏', action: 'batch_hide', confirm: '确定批量隐藏?', color:"primary", size:"small"},
+            { label: '批量隐藏', prop: 'id', action: 'batch_hide', confirm: '确定批量隐藏?', color:"primary", size:"small"},
             { label: '批量显示', action: 'batch_show', type: 'ajax', color: "success",  size: "mini"},
           ]
         }
@@ -74,9 +78,16 @@
         console.log(row);
         alert('触发' + action);
       }
+      
+      function format(key, row){
+        return key + '----' + row[key] + '----' + '格式';
+      }
 
     </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+      <script type="text/javascript" src="<%=htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
   </body>
 </html>

@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 
 //将变量挂载到vue
 Vue.prototype.$selfConfig = window.Config;
-
+Vue.prototype.$format = window.format;
 
 /* eslint-disable no-new */
 new Vue({

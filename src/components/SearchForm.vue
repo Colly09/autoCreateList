@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import { handleListClick } from '../common/action.js'
 export default {
   name: 'SearchForm',
   data () {
@@ -207,7 +206,7 @@ export default {
           if(field.value){
             //如果有值 默认执行一次
             setTimeout(()=>{
-               this.selectChange(field);
+              this.selectChange(field);
             },300)
           }
         }

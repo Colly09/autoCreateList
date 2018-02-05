@@ -9,9 +9,13 @@
       size="mini"
       border 
       v-loading="loading">
-      <el-table-column type="selection" width="55" v-if="selection"></el-table-column>
+      <el-table-column type="selection" width="55" v-if="selection" ></el-table-column>
+      <el-table-column v-for="item in listConfig" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :sortable="item.sortable" >
+        <template slot-scope="scope">
+          <Column :config="item" :row="scope.row"/>
+        </template>
+      </el-table-column>
 
-      <el-table-column v-for="item in listConfig" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :sortable="item.sortable"></el-table-column>
       <el-table-column label="操作" v-if="operate">
         <template slot-scope="scope">
           <Operate :operateList="operateList" :row="scope.row"/>
@@ -40,6 +44,7 @@
 <script>
 import {mapGetters} from 'vuex'
 import Operate from './Operate'
+import Column from './Column'
 
 export default {
   name: 'List',
@@ -64,7 +69,8 @@ export default {
     }
   },
   components:{
-    'Operate': Operate
+    'Operate': Operate,
+    'Column' : Column
   },
   watch: {
     'storeTableData': {
@@ -96,6 +102,7 @@ export default {
       handler: function (data) {
         this.nowPage = 1;
         this.search = data;
+        console.log('storeSearchData change')
         this.getList();
       },
       deep: true
@@ -114,7 +121,6 @@ export default {
       this.$refs.multipleTable.clearSelection();
     },
     handleListClick(button, data){
-      console.log(this);
       console.log(button, data);
       if(button.confirm){
         this.$confirm(button.confirm, '提示', {
@@ -131,8 +137,15 @@ export default {
     },
     handleBatchListClick(button){
       if(this.multipleSelection.length > 0){
-        console.log(this.multipleSelection);
-        this.handleListClick(button, this.multipleSelection);
+        if(button.prop){
+          let data = [];
+          for(let i of this.multipleSelection){
+            data.push(i[button.prop]);
+          }
+          this.handleListClick(button, data);
+        }else{
+          this.handleListClick(button, this.multipleSelection);
+        }
       }else{
         this.$confirm('请选择需要操作的数据', '提示', {
           confirmButtonText: '确定',
@@ -240,7 +253,6 @@ export default {
     }
 
     this.getList();
-
   },
   computed: {
     ...mapGetters({
