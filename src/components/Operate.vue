@@ -2,7 +2,7 @@
    <div>
     <div v-for="button of selfOperateList" style="float:left; margin-right:5px;">
       <el-button v-if="button.type == 'script' || button.type == 'ajax'" @click="handleListClick(button, row)" type="text" size="small">{{button.label}}</el-button>
-      <el-button v-if="button.type == 'link'" @click="goLink(button.link, row)" type="text" size="small" >{{button.label}}</el-button>
+      <a v-if="button.type == 'link'" :href="button.link" target="_blank" class="el-button el-button--text el-button--small" style=" text-decoration: none;">{{button.label}}</a>
     </div>
    </div>
 </template>
@@ -27,13 +27,6 @@ export default {
     },
   },
   methods: {
-    goLink(link, data){
-      this.$store.commit('SET_OPERATE_DATA', {
-        type: 'link',
-        link: link,
-        data: data
-      })
-    },
     handleListClick(button, data){
       this.$store.commit('SET_OPERATE_DATA', {
         type: 'operate',
@@ -43,8 +36,20 @@ export default {
     },
     checkCanShow(data){
       let newOperateList = [];
+      let par=/\{([^\}]+)\}/g;
+
       for(let a of this.operateList){
         let ok = true;
+        if(a.type == "link"){
+          let res = a.link.match(par);
+          if(res){
+            for(let i of res){
+              let str = i.replace('{','').replace('}','');
+              a.link = a.link.replace(i, data[str]);
+            }
+          }
+        }
+
         if(a.condition){
           for(let c of a.condition){
             let flag = false;

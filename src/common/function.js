@@ -1,35 +1,24 @@
-import superagent from 'superagent'
-import { Message } from 'element-ui'
+import axios from 'axios'
 
 export const commonAjaxGet = (url) => {
-  return new Promise((resolve, reject) => {
-    superagent.get(url).set('X-Requested-With', 'XMLHttpRequest').withCredentials().end(function (err, res) {
-      commonAjaxCallback(resolve, reject, err, res)
-    })
-  })
+  return axios.get(url).catch(err => {
+    console.log(err);
+  });
+
 }
 
 export const commonAjaxPost = (url, data) => {
-  return new Promise((resolve, reject) => {
-    superagent.post(url).set('X-Requested-With', 'XMLHttpRequest').type('form').send(data).withCredentials().end(function (err, res) {
-      commonAjaxCallback(resolve, reject, err, res)
-    })
-  })
-}
-
-// commonAjaxCallback process the ajax callback before biz logic
-let commonAjaxCallback = (resolve, reject, err, res) => {
-  if (err) {
-    console.log('网络异常! ', err)
-    reject('网络异常')
-  } else {
-    resolve(JSON.parse(res.text));
-  }
+  return axios.post(url, constructQueryString(data)).then(res=>{
+    return res.data;
+  }).catch(err => {
+    console.log(err);
+  });
+ 
 }
 
 // 把一个数据对象转成 query string
 export const constructQueryString = (data) => {
-  let res = '?'
+  let res = ''
   for (let name in data) {
     data[name] = data[name] || ''
     res += (name + '=' + data[name] + '&')

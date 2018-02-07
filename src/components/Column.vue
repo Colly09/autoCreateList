@@ -23,6 +23,7 @@ export default {
   watch: {
     'row': {
       handler: function (data) {
+        this.multiple = [];
         this.checkShow(data);
       },
       deep: true

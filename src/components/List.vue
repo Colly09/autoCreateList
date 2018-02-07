@@ -90,11 +90,7 @@ export default {
     },
     'storeOperateData':{
       handler: function (data) {
-        if(data.type == 'link'){
-          this.goLink(data.link, data.data);
-        } else if(data.type == 'operate'){
-          this.handleListClick(data.button, data.data);
-        }
+        this.handleListClick(data.button, data.data);
       },
       deep: true
     },
@@ -102,7 +98,6 @@ export default {
       handler: function (data) {
         this.nowPage = 1;
         this.search = data;
-        console.log('storeSearchData change')
         this.getList();
       },
       deep: true
@@ -121,7 +116,6 @@ export default {
       this.$refs.multipleTable.clearSelection();
     },
     handleListClick(button, data){
-      console.log(button, data);
       if(button.confirm){
         this.$confirm(button.confirm, '提示', {
           confirmButtonText: '确定',
@@ -158,12 +152,7 @@ export default {
     doAction(button, data){
       if(button.type == 'ajax'){
         if(!this.$selfConfig.ajaxUri){
-          this.$confirm('请配置操作请求地址[Config.ajaxUri]', '提示', {
-            confirmButtonText: '确定',
-            showCancelButton:false,
-            type: 'error'
-          }).catch(() => {        
-          });
+          console.warn('需要配置操作请求地址[Config.ajaxUri]');
           return;
         }
         let post = {
@@ -177,17 +166,6 @@ export default {
       }else{
         window.operate(button.action, data);
       }
-    },
-    goLink(link, data){
-      if(data){
-        let par=/\{([^\}]+)\}/g;
-        let res = link.match(par);
-        for(let i of res){
-          let str = i.replace('{','').replace('}','');
-          link = link.replace(i, data[str]);
-        }
-      }
-      window.open(link)
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -216,12 +194,7 @@ export default {
     getList() {
       this.loading = true;
       if(!this.$selfConfig.dataUri){
-        this.$confirm('请配置数据接口请求地址[Config.dataUri]', '提示', {
-          confirmButtonText: '确定',
-          showCancelButton:false,
-          type: 'error'
-        }).catch(() => {        
-        });
+        console.warn('需要配置数据接口请求地址[Config.dataUri]');
         return;
       }
       let data = {

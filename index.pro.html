@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>autolist</title>
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link href="<%=htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
+    <% } %>
   </head>
   <body>
     <script>
@@ -58,7 +61,7 @@
             { label: '自定义脚本', action: 'log',  type: 'script', condition: [['id', 'between', 2, 10], ['status', 'eq', '未开拍'] ]},
             { label: '显示', action: 'show', type: 'script' , condition:[ ['status', 'eq', '1'] ]},
             { label: '隐藏', action: 'hide', type: 'script', condition: [ ['status', 'eq', '0'] ]},
-            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['id', 'in', [1, 5, 6]]]},
+            { label: 'AJAX', action: 'ajax', type: 'ajax', condition: [['id', 'in', [1,5,6]]]},
           ],
           batchConfig: [
             { label: '批量隐藏', prop: 'id', action: 'batch_hide', confirm: '确定批量隐藏?', color:"primary", size:"small"},
@@ -82,5 +85,9 @@
 
     </script>
     <div id="app"></div>
+    <!-- built files will be auto injected -->
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+      <script type="text/javascript" src="<%=htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
   </body>
 </html>

@@ -62,7 +62,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: config.build.index,
-      template: 'index.html',
+      template: 'index.pro.html',
       inject: false,
       minify: false,
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
